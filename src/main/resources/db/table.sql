@@ -6,7 +6,7 @@ CREATE TABLE user_tb (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE account_tb ( -- 테이블은 모델 객체라고 함 ..??
+CREATE TABLE account_tb ( 
 	id INT AUTO_INCREMENT PRIMARY KEY,
     number VARCHAR(30) NOT NULL UNIQUE COMMENT '계좌 번호', 
     password VARCHAR(20) NOT NULL,

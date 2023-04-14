@@ -1,28 +1,27 @@
 server:
-  port: 8080
+  port: 8080 # 포트 번호
   servlet: 
     encoding:
-      charset: utf-8
+      charset: utf-8 # 인코딩 표준
       force: true
-      
 
 spring: 
   mvc:
-    view: 
-      prefix: /WEB-INF/view
-      suffix: .jsp
+    view: # JSP 사용 설정
+      prefix: /WEB-INF/view # jsp 파일 경로
+      suffix: .jsp # 확장자
   datasource: # DB 설정
     url: jdbc:h2:mem:testdb;MODE=MySQL
     driver-class-name: org.h2.Driver
-    username: sa
-    password: 
+    username: sa # 유저 이름
+    password: # 비밀번호 (비워두면 비밀번호 X)
   sql: 
-    init: 
-      schema-locations:
-      - classpath:db/table.sql # 콜론 띄어쓰기 ㄴㄴ db 폴더 아래 table.sql 파일 읽으라는 뜻
-      data-locations:
+    init: # 초기 sql 파일 읽기 
+      schema-locations: # 스키마 (테이블 생성 등)
+      - classpath:db/table.sql # 콜론 띄어쓰기 X, db 폴더 아래 table.sql 파일 읽으라는 뜻
+      data-locations: # 샘플 데이터
       - classpath:db/data.sql
-  h2: 
+  h2: # H2 Database 설정
     console: 
       enabled: true
   output: 

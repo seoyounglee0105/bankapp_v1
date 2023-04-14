@@ -9,7 +9,7 @@ INSERT INTO account_tb(number, password, balance, user_id, created_at) values('2
 INSERT INTO account_tb(number, password, balance, user_id, created_at) values('333', '1234', 0, 3, now());
 
 -- 거래 내역 샘플 데이터
--- 이체 내역을 기록 ( 1번 계좌에서 2번 계좌로 100원을 이체 한다) 
+-- 이체 내역을 기록 ( 1번 계좌에서 2번 계좌로 100원을 이체 ) 
 INSERT INTO history_tb(amount, w_balance, d_balance, w_account_id, d_account_id, created_at)
 VALUES (100, 900, 1100, 1, 2, now());
 
