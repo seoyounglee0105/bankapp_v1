@@ -16,7 +16,12 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: 
-    
+  sql: 
+    init: 
+      schema-locations:
+      - classpath:db/table.sql # 콜론 띄어쓰기 ㄴㄴ db 폴더 아래 table.sql 파일 읽으라는 뜻
+      data-locations:
+      - classpath:db/data.sql
   h2: 
     console: 
       enabled: true
