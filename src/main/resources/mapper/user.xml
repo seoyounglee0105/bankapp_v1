@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+                 
+                   <!-- DAO 인터페이스 경로를 정확히 입력 -->
+<mapper namespace="com.tenco.bank.repository.interfaces.UserRepository"> 
+
+	<insert id="insert"> <!-- id명은 UserRepository의 메서드명과 동일하게 -->
+		INSERT INTO user_tb (username, password, fullname, created_at)
+		VALUES ( #{username}, #{password}, #{fullname}, now() )  <!-- SQL의 함수를 사용할 수 있음 -->
+	</insert>
+	
+	<update id="updateById">
+		UPDATE user_tb SET username = #{username}, password = #{password}, fullname = #{fullname}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteById">
+		DELETE FROM user_tb WHERE id = #{id}
+	</delete>
+	
+	<select id="findById" resultType="com.tenco.bank.repository.model.User"> <!-- SELECT는 객체 타입으로 리턴할 것이므로, 모델 클래스를 지정해주어야 함 -->
+		SELECT * FROM user_tb WHERE id = #{id}
+	</select>
+	
+	<select id="findAll" resultType="com.tenco.bank.repository.model.User"> <!-- List 내 자료형도 단일 객체처럼 -->
+		SELECT * FROM user_tb
+	</select>
+	
+</mapper>
