@@ -13,7 +13,7 @@ public interface UserRepository {
 	
 	public int updateById(User user);  
 	
-	public int deleteById(Integer id); // principal : 접근 주체
+	public int deleteById(Integer id); // principal (접근 주체)로도 사용함
 	
 	// 전체 조회
 	public List<User> findAll();
