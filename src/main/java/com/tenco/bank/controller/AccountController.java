@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.tenco.bank.handler.exception.CustomPageException;
 import com.tenco.bank.handler.exception.CustomRestfullException;
+import com.tenco.bank.handler.exception.UnAuthorizedException;
 import com.tenco.bank.repository.model.User;
 
 @Controller
@@ -31,7 +32,7 @@ public class AccountController {
 		User principal = (User) session.getAttribute("principal");
 		
 		if (principal == null) {
-			throw new CustomRestfullException("인증된 사용자가 아닙니다.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+			throw new UnAuthorizedException("인증된 사용자가 아닙니다.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
 		}
 		
 		return "account/list";
