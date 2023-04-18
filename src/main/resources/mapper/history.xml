@@ -4,6 +4,8 @@
 
 <mapper namespace="com.tenco.bank.repository.interfaces.HistoryRepository">
 	
+	<!-- interface에 @Mapper를 지정해주었기 때문에, parameterType을 반드시 지정해줄 필요는 없다. -->
+	<!-- 가독성을 위해 추가해주는 경우가 있다. -->
 	<insert id="insert" parameterType="com.tenco.bank.repository.model.History">
 		INSERT INTO history_tb (amount, w_balance, d_balance, w_account_id, d_account_id, created_at)
 		VALUES ( #{amount}, #{wBalance}, #{dBalance}, #{wAccountId}, #{dAccountId}, now() )
