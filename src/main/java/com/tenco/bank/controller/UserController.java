@@ -98,13 +98,24 @@ public class UserController {
 		
 		// 2. 서비스 호출
 		// principal : 접근 주체 (코딩 컨벤션 : 세션에 저장할 정보 변수의 이름을 이렇게 사용함)
+		// session은 어차피 서버에서만 접근할 수 있고 클라이언트는 접근할 수 없기 때문에
+		// 비밀번호 포함해도 상관 없음 그래도 신경써주는 습관이 좋다
+		
 		User principal = userService.signIn(signInFormDto);
+		principal.setPassword(null);
 		
 		// 3. 사용자 정보를 세션에 저장
 		session.setAttribute("principal", principal);
 		
 		// todo 변경 예정
 		return "/account/list";
+	}
+	
+	@GetMapping("/logout")
+	public String logout() {
+		session.invalidate(); // 로그아웃 처리
+		
+		return "redirect:/user/sign-in";
 	}
 	
 }
