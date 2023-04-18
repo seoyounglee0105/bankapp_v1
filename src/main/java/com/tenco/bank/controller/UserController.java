@@ -1,5 +1,7 @@
 package com.tenco.bank.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.tenco.bank.dto.SignInFormDto;
 import com.tenco.bank.dto.SignUpFormDto;
 import com.tenco.bank.handler.exception.CustomRestfullException;
+import com.tenco.bank.repository.model.User;
 import com.tenco.bank.service.UserService;
 
 @Controller
@@ -19,6 +22,9 @@ public class UserController {
 	// 서비스
 	@Autowired // 객체 생성 시 의존 주입 처리
 	private UserService userService;
+	
+	@Autowired // 해주면 예전처럼 request.getSession하지 않아도 가져와짐 
+	private HttpSession session;
 
 	// http://localhost:8080/user/sign-up
 	@GetMapping("/sign-up")
@@ -73,13 +79,32 @@ public class UserController {
 	 * 로그인 처리
 	 * @param signInFormDto
 	 * @return 메인 페이지 (수정 예정)
+	 * 
+	 * GET 방식 처리는 브라우저 히스토리에 남겨짐
+	 * => 예외적으로, 로그인은 POST 방식으로 처리함 (보안 상의 이유)
 	 */
 	
 	@PostMapping("/sign-in")
 	public String signInProc(SignInFormDto signInFormDto) {
 		
+		// 1. 유효성 검사 (인증 필요하다면 인증 검사 먼저 - 여기는 ㄴㄴ)
+		if (signInFormDto.getUsername() == null || signInFormDto.getUsername().isEmpty()) {
+			throw new CustomRestfullException("username을 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (signInFormDto.getPassword() == null || signInFormDto.getPassword().isEmpty()) {
+			throw new CustomRestfullException("password를 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		// 2. 서비스 호출
+		// principal : 접근 주체 (코딩 컨벤션 : 세션에 저장할 정보 변수의 이름을 이렇게 사용함)
+		User principal = userService.signIn(signInFormDto);
+		
+		// 3. 사용자 정보를 세션에 저장
+		session.setAttribute("principal", principal);
+		
 		// todo 변경 예정
-		return "/test/main";
+		return "/account/list";
 	}
 	
 }

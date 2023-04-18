@@ -18,13 +18,9 @@ public class AccountController {
 	 */
 	
 	@GetMapping({"/list", "/"}) // 다중 매핑
-	public void list() {
+	public String list() {
 		
-		// 예외 테스트 todo 삭제
-//		throw new CustomRestfullException("인증되지 않은 사용자입니다.", HttpStatus.UNAUTHORIZED); // 401
-		throw new CustomPageException("페이지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-		
-//		return "account/list";
+		return "account/list";
 	}
 	
 	/**

@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tenco.bank.dto.SignInFormDto;
 import com.tenco.bank.dto.SignUpFormDto;
 import com.tenco.bank.handler.exception.CustomRestfullException;
 import com.tenco.bank.repository.interfaces.UserRepository;
+import com.tenco.bank.repository.model.User;
 
 @Service // IoC 대상
 public class UserService {
@@ -29,6 +31,25 @@ public class UserService {
 			throw new CustomRestfullException("회원 가입에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR); // 연산 오류
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * @param signInFormDto
+	 * @return userEntity
+	 */
+	
+	public User signIn(SignInFormDto signInFormDto) {
+		
+		// 코딩 컨벤션
+		// select 문을 통해 반환받은 model 객체의 이름은 model명 + Entity로
+		User userEntity = userRepository.findByUsernameAndPassword(signInFormDto);
+		
+		if (userEntity == null) {
+			throw new CustomRestfullException("아이디 또는 비밀번호가 틀렸습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return userEntity;
 	}
 	
 }
