@@ -108,8 +108,7 @@ public class UserController {
 		// 3. 사용자 정보를 세션에 저장
 		session.setAttribute(Define.PRINCIPAL, principal);
 		
-		// todo 변경 예정
-		return "/account/list";
+		return "redirect:/account/list"; // 이렇게 해야 계좌 목록 데이터가 정상적으로 나옴
 	}
 	
 	@GetMapping("/logout")

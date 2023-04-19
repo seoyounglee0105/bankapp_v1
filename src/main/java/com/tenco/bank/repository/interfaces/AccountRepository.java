@@ -23,5 +23,8 @@ public interface AccountRepository {
 	
 	// 특정 회원의 계좌 조회
 	public List<Account> findByUserId(Integer userId);
+
+	// 계좌번호로 계좌 조회
+	public Account findByNumber(String number);
 	
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.tenco.bank.dto.SaveFormDto;
+import com.tenco.bank.dto.WithdrawFormDto;
 import com.tenco.bank.handler.exception.CustomPageException;
 import com.tenco.bank.handler.exception.CustomRestfullException;
 import com.tenco.bank.handler.exception.UnAuthorizedException;
@@ -55,7 +56,7 @@ public class AccountController {
 		
 		// 담긴 값이 없다면
 		if (accountList.isEmpty()) {
-			model.addAttribute("accountList", null);
+			model.addAttribute("accountList", null); // 사실 지금 상황에서는 null 처리해줄 필요 없음 
 		// 담긴 값이 있다면
 		} else {
 			model.addAttribute("accountList", accountList);			
@@ -72,7 +73,47 @@ public class AccountController {
 	@GetMapping("/withdraw")
 	public String withdraw() {
 		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+		
 		return "account/withdrawForm";
+	}
+	
+	// 출금 처리
+	
+	@PostMapping("/withdraw-proc")
+	public String withdrawProc(WithdrawFormDto withdrawFormDto) {
+		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+		
+		// 유효성 검사
+		if (withdrawFormDto.getAmount() == null) {
+			throw new CustomRestfullException("출금액을 입력하세요.", HttpStatus.BAD_REQUEST);
+		} else if (withdrawFormDto.getAmount().longValue() <= 0) {
+			throw new CustomRestfullException("출금액이 0원 이하일 수는 없습니다.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (withdrawFormDto.getWAccountNumber() == null || withdrawFormDto.getWAccountNumber().isEmpty()) {
+			throw new CustomRestfullException("계좌번호를 입력하세요.", HttpStatus.BAD_REQUEST);			
+		}
+		
+		if (withdrawFormDto.getWAccountPassword() == null || withdrawFormDto.getWAccountPassword().isEmpty()) {
+			throw new CustomRestfullException("비밀번호를 입력하세요.", HttpStatus.BAD_REQUEST);			
+		}
+		
+		// 서비스 호출
+		accountService.updateAccountWithdraw(withdrawFormDto, principal.getId());
+		
+		return "redirect:/account/list"; // redirect는 새로운 request, response를 생성함
 	}
 	
 	/**
@@ -82,6 +123,13 @@ public class AccountController {
 	
 	@GetMapping("/deposit")
 	public String deposit() {
+		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
 		
 		return "account/depositForm";
 	}
@@ -93,6 +141,13 @@ public class AccountController {
 	
 	@GetMapping("/transfer")
 	public String transfer() {
+		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
 		
 		return "account/transferForm";
 	}
