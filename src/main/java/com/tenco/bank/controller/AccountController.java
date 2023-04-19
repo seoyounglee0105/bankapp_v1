@@ -6,12 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.tenco.bank.dto.SaveFormDto;
 import com.tenco.bank.handler.exception.CustomPageException;
 import com.tenco.bank.handler.exception.CustomRestfullException;
 import com.tenco.bank.handler.exception.UnAuthorizedException;
 import com.tenco.bank.repository.model.User;
+import com.tenco.bank.service.AccountService;
+import com.tenco.bank.utils.Define;
 
 @Controller
 @RequestMapping("/account")
@@ -19,6 +23,9 @@ public class AccountController {
 
 	@Autowired
 	private HttpSession session;
+	
+	@Autowired
+	private AccountService accountService;
 	
 	/**
 	 * 계좌 목록 페이지
@@ -29,7 +36,7 @@ public class AccountController {
 	public String list() {
 
 		// 인증 검사
-		User principal = (User) session.getAttribute("principal");
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
 		
 		if (principal == null) {
 			throw new UnAuthorizedException("인증된 사용자가 아닙니다.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
@@ -79,7 +86,51 @@ public class AccountController {
 	@GetMapping("/save")
 	public String save() {
 		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+		
 		return "account/saveForm";
+	}
+	
+	/**
+	 * 계좌 생성 
+	 * 인증 검사
+	 * 유효성 검사 처리 - 0원 이상 입력 가능, 음수 입력 불가능
+	 * @param saveFormDto
+	 * @return 계좌 목록 페이지
+	 */
+	
+	@PostMapping("/save-proc")
+	public String saveProc(SaveFormDto saveFormDto) {
+		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+		
+		// 유효성 검사
+		if (saveFormDto.getNumber() == null || saveFormDto.getNumber().isEmpty()) {
+			throw new CustomRestfullException("계좌번호를 입력해주세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (saveFormDto.getPassword() == null || saveFormDto.getPassword().isEmpty()) {
+			throw new CustomRestfullException("비밀번호를 입력해주세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (saveFormDto.getBalance() == null || saveFormDto.getBalance() < 0) {
+			throw new CustomRestfullException("0 또는 0보다 큰 금액을 입력해주세요.", HttpStatus.BAD_REQUEST);
+		}
+
+		// 서비스 호출
+		accountService.createAccount(saveFormDto, principal.getId());
+		
+		return "redirect:/account/list";
 	}
 	
 	/**

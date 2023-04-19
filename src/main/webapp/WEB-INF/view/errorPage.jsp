@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page isErrorPage="true" %>  <!-- 필수 -->
+<%@ page isErrorPage="true" %>  <!-- 이걸 지정해야 에러 페이지가 됨 -->
 <!DOCTYPE html>
 <html>
 <head>

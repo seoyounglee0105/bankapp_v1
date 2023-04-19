@@ -14,6 +14,7 @@ import com.tenco.bank.dto.SignUpFormDto;
 import com.tenco.bank.handler.exception.CustomRestfullException;
 import com.tenco.bank.repository.model.User;
 import com.tenco.bank.service.UserService;
+import com.tenco.bank.utils.Define;
 
 @Controller
 @RequestMapping("/user")
@@ -58,7 +59,7 @@ public class UserController {
 		//------- 유효성 검사 통과 시
 		
 		// 2. 서비스 호출 (핵심 로직은 서비스에서)
-		userService.signUp(signUpFormDto);
+		userService.createUser(signUpFormDto);
 		
 		// 로그인 페이지로 보냄
 		return "redirect:/user/sign-in";
@@ -105,7 +106,7 @@ public class UserController {
 		principal.setPassword(null);
 		
 		// 3. 사용자 정보를 세션에 저장
-		session.setAttribute("principal", principal);
+		session.setAttribute(Define.PRINCIPAL, principal);
 		
 		// todo 변경 예정
 		return "/account/list";

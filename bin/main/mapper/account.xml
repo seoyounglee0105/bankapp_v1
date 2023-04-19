@@ -4,7 +4,7 @@
 
 <mapper namespace="com.tenco.bank.repository.interfaces.AccountRepository">
 	
-	<insert id="insert">
+	<insert id="insert"> <!-- int 같은 기본 자료형은 resultType 생략 가능 -->
 		INSERT INTO account_tb (number, password, balance, user_id, created_at)
 		VALUES ( #{number}, #{password}, #{balance}, #{userId}, now() )
 	</insert>

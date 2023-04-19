@@ -22,7 +22,7 @@ public class UserService {
 	@Transactional 
 	// 메서드 호출이 시작될 때 트랜잭션의 시작
 	// 메서드 종료 시 트랜잭션의 종료 (-> commit : 저장 장치에 실제로 저장)
-	public void signUp(SignUpFormDto signUpFormDto) {
+	public void createUser(SignUpFormDto signUpFormDto) {
 		// signUp의 매개변수는 DTO, insert의 매개변수는 Model
 		
 		int result = userRepository.insert(signUpFormDto);
