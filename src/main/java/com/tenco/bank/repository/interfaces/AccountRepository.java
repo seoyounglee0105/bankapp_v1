@@ -21,4 +21,7 @@ public interface AccountRepository {
 	// 모든 계좌 조회
 	public List<Account> findAll();
 	
+	// 특정 회원의 계좌 조회
+	public List<Account> findByUserId(Integer userId);
+	
 }

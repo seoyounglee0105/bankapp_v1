@@ -26,4 +26,8 @@
 		SELECT * FROM account_tb
 	</select>
 	
+	<select id="findByUserId" resultType="com.tenco.bank.repository.model.Account">
+		SELECT * FROM account_tb WHERE user_id = #{userId}
+	</select>
+	
 </mapper>
