@@ -5,7 +5,7 @@
 	<h2>이체 페이지 (todo 인증 처리)</h2>
 	<h5>어서오세요~</h5>
 	<div class="bg-light p-md-5 h-75">
-		<form action="#" method="post">
+		<form action="/account/transfer-proc" method="post">
 			<div class="form-group">
 				<label for="amount">이체 금액 :</label> 
 				<input type="text" class="form-control" placeholder="이체 금액을 입력하시오." id="amount" name="amount">

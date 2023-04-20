@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.tenco.bank.dto.DepositFormDto;
 import com.tenco.bank.dto.SaveFormDto;
+import com.tenco.bank.dto.TransferFormDto;
 import com.tenco.bank.dto.WithdrawFormDto;
 import com.tenco.bank.handler.exception.CustomPageException;
 import com.tenco.bank.handler.exception.CustomRestfullException;
@@ -98,7 +100,7 @@ public class AccountController {
 		// 유효성 검사
 		if (withdrawFormDto.getAmount() == null) {
 			throw new CustomRestfullException("출금액을 입력하세요.", HttpStatus.BAD_REQUEST);
-		} else if (withdrawFormDto.getAmount().longValue() <= 0) {
+		} else if (withdrawFormDto.getAmount().longValue() <= 0) { // Long 타입의 값은 .longValue()로 가져옴
 			throw new CustomRestfullException("출금액이 0원 이하일 수는 없습니다.", HttpStatus.BAD_REQUEST);
 		}
 		
@@ -127,11 +129,39 @@ public class AccountController {
 		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
 		
-		if (principal == null) {
+		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
 			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
 		}
 		
 		return "account/depositForm";
+	}
+	
+	@PostMapping("/deposit-proc")
+	public String depositProc(DepositFormDto depositFormDto) {
+		
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+		
+		if (depositFormDto.getAmount() == null) {
+			throw new CustomRestfullException("금액을 입력해주세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (depositFormDto.getAmount().longValue() <= 0) {
+			throw new CustomRestfullException("입금 금액이 0원 이하일 수 없습니다.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (depositFormDto.getDAccountNumber() == null || depositFormDto.getDAccountNumber().isEmpty()) {
+			throw new CustomRestfullException("계좌번호를 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		// 서비스 호출
+		accountService.updateAccountDeposit(depositFormDto);
+		
+		return "redirect:/account/list";
 	}
 	
 	/**
@@ -143,13 +173,58 @@ public class AccountController {
 	public String transfer() {
 		
 		// 인증 검사
+		if (session.getAttribute(Define.PRINCIPAL) == null) {
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+		
+		return "account/transferForm";
+	}
+	
+	// 이체 기능
+	@PostMapping("/transfer-proc")
+	public String transferProc(TransferFormDto transferFormDto) {
+		
+		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
 		
 		if (principal == null) {
 			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
 		}
 		
-		return "account/transferForm";
+		// 유효성 검사
+		// 출금 계좌번호 입력 여부
+		if (transferFormDto.getWAccountNumber() == null || transferFormDto.getWAccountNumber().isEmpty()) {
+			throw new CustomRestfullException("출금 계좌번호를 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+
+		// 입력 계좌번호 입력 여부
+		if (transferFormDto.getDAccountNumber() == null || transferFormDto.getDAccountNumber().isEmpty()) {
+			throw new CustomRestfullException("입금 계좌번호를 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		// 출금 계좌 비밀번호 입력 여부
+		if (transferFormDto.getWAccountPassword() == null || transferFormDto.getWAccountPassword().isEmpty()) {
+			throw new CustomRestfullException("출금 계좌 비밀번호를 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		// 이체 금액 확인
+		if (transferFormDto.getAmount() == null) {
+			throw new CustomRestfullException("이체 금액을 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		if (transferFormDto.getAmount() <= 0) {
+			throw new CustomRestfullException("이체 금액을 1원 이상 입력하세요.", HttpStatus.BAD_REQUEST);
+		}
+		
+		// 출금 계좌번호와 입금 계좌번호가 동일하지 않은지 확인
+		if (transferFormDto.getWAccountNumber().equals(transferFormDto.getDAccountNumber())) {
+			throw new CustomRestfullException("출금 계좌번호와 입금 계좌번호가 동일합니다.", HttpStatus.BAD_REQUEST);
+		}
+		
+		// 서비스 호출
+		accountService.updateAccountTransfer(transferFormDto, principal.getId());
+		
+		return "redirect:/account/list";
 	}
 	
 	/**
