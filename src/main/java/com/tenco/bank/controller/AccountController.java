@@ -3,19 +3,23 @@ package com.tenco.bank.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.tenco.bank.dto.DepositFormDto;
 import com.tenco.bank.dto.SaveFormDto;
 import com.tenco.bank.dto.TransferFormDto;
 import com.tenco.bank.dto.WithdrawFormDto;
+import com.tenco.bank.dto.response.HistoryDto;
 import com.tenco.bank.handler.exception.CustomPageException;
 import com.tenco.bank.handler.exception.CustomRestfullException;
 import com.tenco.bank.handler.exception.UnAuthorizedException;
@@ -287,10 +291,31 @@ public class AccountController {
 	 * @return
 	 */
 	
-	@GetMapping("/detail")
-	public String detail() {
+	@GetMapping("/detail/{id}")                                     
+	public String detail(@PathVariable Integer id, @RequestParam(required = false, name = "type", defaultValue = "all") String type,  Model model) {
 		
-		return "";
+		// 인증 검사
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
+		
+		if (principal == null) {
+			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
+		}
+
+		// 화면을 구성하기 위해 필요한 데이터
+		
+		// 소유자 정보 (세션에서 가져옴)
+		model.addAttribute(Define.PRINCIPAL, principal);
+		
+		// 계좌 번호 (1개), 계좌 잔액
+		Account account = accountService.readAccount(id);
+		model.addAttribute("account", account);
+		
+		System.out.println("type: " + type);
+		// 거래 내역
+		List<HistoryDto> historyDtoList = accountService.readHistoryListByAccount(type, id);
+		model.addAttribute("historyList", historyDtoList);
+		
+		return "/account/detail";
 	}
 	
 }

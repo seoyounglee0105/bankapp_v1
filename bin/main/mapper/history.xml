@@ -4,6 +4,8 @@
 
 <mapper namespace="com.tenco.bank.repository.interfaces.HistoryRepository">
 	
+	<!-- interface에 @Mapper를 지정해주었기 때문에, parameterType을 반드시 지정해줄 필요는 없다. -->
+	<!-- 가독성을 위해 추가해주는 경우가 있다. -->
 	<insert id="insert" parameterType="com.tenco.bank.repository.model.History">
 		INSERT INTO history_tb (amount, w_balance, d_balance, w_account_id, d_account_id, created_at)
 		VALUES ( #{amount}, #{wBalance}, #{dBalance}, #{wAccountId}, #{dAccountId}, now() )
@@ -25,6 +27,50 @@
 	
 	<select id="findAll" resultType="com.tenco.bank.repository.model.History">
 		SELECT * FROM history_tb	
+	</select>
+	
+	<!-- xml 파일에서는 AS 별칭에 작은따옴표 ㄴㄴ 오류남 ****************** -->
+	
+	<select id="findByIdHistoryType" resultType="com.tenco.bank.dto.response.HistoryDto">
+		<!-- 동적 쿼리 -->
+		<if test="type == 'deposit'">
+			SELECT h.id, h.amount, h.d_balance AS balance, h.created_at, 
+					ifnull(wa.number, 'ATM') AS sender, da.number AS receiver
+			FROM history_tb AS h
+			LEFT JOIN account_tb AS da
+			ON h.d_account_id = da.id
+			LEFT JOIN account_tb AS wa
+			on h.w_account_id = wa.id
+			WHERE h.d_account_id = #{id};
+		</if>
+		
+		<if test="type == 'withdraw'">
+			SELECT h.id, h.amount, h.w_balance AS balance, h.created_at, 
+					ifnull(da.number, 'ATM') AS sender, wa.number AS receiver
+			FROM history_tb AS h
+			LEFT JOIN account_tb AS wa
+			ON h.w_account_id = wa.id
+			LEFT JOIN account_tb AS da
+			ON h.d_account_id = da.id
+			WHERE h.w_account_id = #{id};
+		</if>
+		
+		<if test="type == 'all'">
+			SELECT h.id, h.amount,
+				CASE 
+					WHEN h.w_account_id = #{id} THEN (h.w_balance)
+					WHEN h.d_account_id = #{id} THEN (h.d_balance)
+				END AS balance,
+				ifnull(wa.number, 'ATM') AS sender,
+				ifnull(da.number, 'ATM') AS receiver,
+				h.created_at
+			FROM history_tb AS h
+			LEFT JOIN account_tb AS da
+			ON h.d_account_id = da.id
+			LEFT JOIN account_tb AS wa
+			ON h.w_account_id = wa.id
+			WHERE h.d_account_id = #{id} OR h.w_account_id = #{id};
+		</if>
 	</select>
 	
 </mapper>

@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/view/layout/header.jsp"%>
 
 <div class="col-sm-8">
-	<h2>이체 페이지 (todo 인증 처리)</h2>
+	<h2>이체 페이지</h2>
 	<h5>어서오세요~</h5>
 	<div class="bg-light p-md-5 h-75">
 		<form action="/account/transfer-proc" method="post">
