@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,9 @@ public class UserController {
 	
 	@Autowired // 해주면 예전처럼 request.getSession하지 않아도 가져와짐 
 	private HttpSession session;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	// http://localhost:8080/user/sign-up
 	@GetMapping("/sign-up")
@@ -103,6 +107,7 @@ public class UserController {
 		// 비밀번호 포함해도 상관 없음 그래도 신경써주는 습관이 좋다
 		
 		User principal = userService.signIn(signInFormDto);
+		
 		principal.setPassword(null);
 		
 		// 3. 사용자 정보를 세션에 저장

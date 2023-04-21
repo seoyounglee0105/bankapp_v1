@@ -22,7 +22,6 @@ dependencies {
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'  // 톰캣에서 JSP를 처리하기 위한 라이브러리
 	implementation 'javax.servlet:jstl'  // JSTL
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.0'  // DB 접근 기술 편하게 사용
-	runtimeOnly 'com.h2database:h2'
 	
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -30,6 +29,12 @@ dependencies {
 	
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	// 커넥트 j
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	
+	// 암호화 라이브러리
+	implementation 'org.springframework.security:spring-security-crypto'
 }
 
 tasks.named('test') {

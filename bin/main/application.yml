@@ -11,23 +11,23 @@ spring:
     view: # JSP 사용 설정
       prefix: /WEB-INF/view/ # jsp 파일 경로
       suffix: .jsp # 확장자
-  datasource: # DB 설정
-    url: jdbc:h2:mem:testdb;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: sa # 유저 이름
-    password: # 비밀번호 (비워두면 비밀번호 X)
-  sql: 
-    init: # 초기 sql 파일 읽기 
-      schema-locations: # 스키마 (테이블 생성 등)
-      - classpath:db/table.sql # 콜론 띄어쓰기 X, db 폴더 아래 table.sql 파일 읽으라는 뜻
-      data-locations: # 샘플 데이터
-      - classpath:db/data.sql
-  h2: # H2 Database 설정
-    console: 
-      enabled: true
-  output: 
-    ansi: # 쿼리문 표준
-      enabled: always
+  datasource: # DB 설정 (MYSQL으로 마이그레이션하기) **************************
+    url: jdbc:mysql://localhost:3306/bank2?serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root # 유저 이름
+    password: 1234 # 비밀번호 (비워두면 비밀번호 X)
+#  sql: 
+#    init: # 초기 sql 파일 읽기 
+#      schema-locations: # 스키마 (테이블 생성 등)
+#      - classpath:db/table.sql # 콜론 띄어쓰기 X, db 폴더 아래 table.sql 파일 읽으라는 뜻
+#      data-locations: # 샘플 데이터
+#      - classpath:db/data.sql
+#  h2: # H2 Database 설정
+#    console: 
+#      enabled: true
+#  output: 
+#    ansi: # 쿼리문 표준
+#      enabled: always
 
 mybatis:
   mapper-locations:         # **.xml : 해당 경로 아래 모든 xml 파일

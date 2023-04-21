@@ -2,6 +2,7 @@ package com.tenco.bank.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +19,19 @@ public class UserService {
 	@Autowired // 객체 생성 시 의존 주입 처리
 	private UserRepository userRepository;
 	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	// 트랜잭션 어노테이션
 	@Transactional 
 	// 메서드 호출이 시작될 때 트랜잭션의 시작
 	// 메서드 종료 시 트랜잭션의 종료 (-> commit : 저장 장치에 실제로 저장)
 	public void createUser(SignUpFormDto signUpFormDto) {
-		// signUp의 매개변수는 DTO, insert의 매개변수는 Model
+
+		// 비밀번호 암호화 처리
+		String rawPwd = signUpFormDto.getPassword();
+		String hashPwd = passwordEncoder.encode(rawPwd);
+		signUpFormDto.setPassword(hashPwd); // 객체 상태 변경
 		
 		int result = userRepository.insert(signUpFormDto);
 		
@@ -39,14 +47,19 @@ public class UserService {
 	 * @return userEntity
 	 */
 	
+	@Transactional
 	public User signIn(SignInFormDto signInFormDto) {
 		
 		// 코딩 컨벤션
 		// select 문을 통해 반환받은 model 객체의 이름은 model명 + Entity로
-		User userEntity = userRepository.findByUsernameAndPassword(signInFormDto);
-		
+		User userEntity = userRepository.findByUsername(signInFormDto);
+
 		if (userEntity == null) {
-			throw new CustomRestfullException("아이디 또는 비밀번호가 틀렸습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new CustomRestfullException("존재하지 않는 username입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		if (passwordEncoder.matches(signInFormDto.getPassword(), userEntity.getPassword()) == false) {
+			throw new CustomRestfullException("비밀번호가 틀렸습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return userEntity;
