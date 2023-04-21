@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import org.springframework.http.HttpStatus;
 
 import com.tenco.bank.handler.exception.CustomRestfullException;
+import com.tenco.bank.utils.DecimalUtil;
 
 import lombok.Data;
 
@@ -59,6 +60,10 @@ public class Account {
 		if (this.balance < amount) {
 			throw new CustomRestfullException("출금 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	public String formatBalance() {
+		return DecimalUtil.decimalFormat(balance);
 	}
 	
 }

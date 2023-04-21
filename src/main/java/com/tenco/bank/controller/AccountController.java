@@ -45,18 +45,13 @@ public class AccountController {
 	
 	@GetMapping({"/list", "/"}) // 다중 매핑
 	public String list(Model model) { // 데이터를 내려주기 위해 Model을 매개변수에 선언
-
-		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {
-			throw new UnAuthorizedException("인증된 사용자가 아닙니다.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
 				
 		// View 화면으로 데이터를 내려 주는 기술
 		// Model 또는 ModelAndView
 		// Model을 더 권장함
 		// ModelAndView는 동적으로 페이지를 반환할 때
+		
+		User principal = (User) session.getAttribute(Define.PRINCIPAL);
 		
 		List<Account> accountList = accountService.readAccountList(principal.getId());
 		
@@ -78,14 +73,7 @@ public class AccountController {
 	
 	@GetMapping("/withdraw")
 	public String withdraw() {
-		
-		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
-		
+
 		return "account/withdrawForm";
 	}
 	
@@ -94,12 +82,7 @@ public class AccountController {
 	@PostMapping("/withdraw-proc")
 	public String withdrawProc(WithdrawFormDto withdrawFormDto) {
 		
-		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
 		
 		// 유효성 검사
 		if (withdrawFormDto.getAmount() == null) {
@@ -130,25 +113,13 @@ public class AccountController {
 	@GetMapping("/deposit")
 	public String deposit() {
 		
-		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
-		
 		return "account/depositForm";
 	}
 	
 	@PostMapping("/deposit-proc")
 	public String depositProc(DepositFormDto depositFormDto) {
 		
-		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {   // 이런 메세지들도 Define에 상수 선언해놓고 통일된 내용으로 내보내자.
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
 		
 		if (depositFormDto.getAmount() == null) {
 			throw new CustomRestfullException("금액을 입력해주세요.", HttpStatus.BAD_REQUEST);
@@ -176,11 +147,6 @@ public class AccountController {
 	@GetMapping("/transfer")
 	public String transfer() {
 		
-		// 인증 검사
-		if (session.getAttribute(Define.PRINCIPAL) == null) {
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
-		
 		return "account/transferForm";
 	}
 	
@@ -190,10 +156,6 @@ public class AccountController {
 		
 		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
 		
 		// 유효성 검사
 		// 출금 계좌번호 입력 여부
@@ -239,13 +201,6 @@ public class AccountController {
 	@GetMapping("/save")
 	public String save() {
 		
-		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
-		
 		return "account/saveForm";
 	}
 	
@@ -262,11 +217,7 @@ public class AccountController {
 		
 		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
-		
+
 		// 유효성 검사
 		if (saveFormDto.getNumber() == null || saveFormDto.getNumber().isEmpty()) {
 			throw new CustomRestfullException("계좌번호를 입력해주세요.", HttpStatus.BAD_REQUEST);
@@ -296,10 +247,6 @@ public class AccountController {
 		
 		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		
-		if (principal == null) {
-			throw new UnAuthorizedException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED); // 인증되지 않음 (401)
-		}
 
 		// 화면을 구성하기 위해 필요한 데이터
 		
@@ -310,7 +257,6 @@ public class AccountController {
 		Account account = accountService.readAccount(id);
 		model.addAttribute("account", account);
 		
-		System.out.println("type: " + type);
 		// 거래 내역
 		List<HistoryDto> historyDtoList = accountService.readHistoryListByAccount(type, id);
 		model.addAttribute("historyList", historyDtoList);

@@ -143,7 +143,6 @@ public class AccountService {
 	}
 	
 	// 이체 처리
-	
 	@Transactional
 	public void updateAccountTransfer(TransferFormDto transferFormDto, Integer principalId) {
 		// 출금 계좌 존재 여부 확인 (select)

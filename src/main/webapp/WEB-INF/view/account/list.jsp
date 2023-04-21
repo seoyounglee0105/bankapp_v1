@@ -22,7 +22,7 @@
 						<c:forEach var="account" items="${accountList}" >
 							<tr> 
 								<td><a href="/account/detail/${account.id}">${account.number}</a></td>
-								<td>${account.balance}원</td>
+								<td>${account.formatBalance()}원</td>
 							</tr>				
 						</c:forEach>
 					</tbody>

@@ -3,6 +3,7 @@ package com.tenco.bank.dto.response;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 
+import com.tenco.bank.utils.DecimalUtil;
 import com.tenco.bank.utils.TimestampUtil;
 
 import lombok.Data;
@@ -23,17 +24,11 @@ public class HistoryDto {
 	}
 	
 	public String formatBalance() {
-		DecimalFormat df = new DecimalFormat("#,###");
-		String formatNumber = df.format(balance);
-		
-		return formatNumber;
+		return DecimalUtil.decimalFormat(balance);
 	}
 	
 	public String formatAmount() {
-		DecimalFormat df = new DecimalFormat("#,###");
-		String formatNumber = df.format(amount);
-		
-		return formatNumber;
+		return DecimalUtil.decimalFormat(amount);
 	}
 	
 }

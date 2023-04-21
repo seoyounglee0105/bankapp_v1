@@ -19,7 +19,7 @@
 		<div class="user--box">
 			${principal.username}님 계좌 <br>
 			계좌 번호 : ${account.number} <br>
-			잔액 : ${account.balance}원
+			잔액 : ${account.formatBalance()}원
 		</div>
 		<br>
 		
