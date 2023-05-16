@@ -36,7 +36,8 @@ mybatis:
     map-underscore-to-camel-case: true # DB의 underscore(snake case) 방식을 Java의 camel case 방식과 매핑
     
   
-  
+tenco:
+  key: 1q2w3e4r!
   
   
   
